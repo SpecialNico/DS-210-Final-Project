@@ -3,9 +3,7 @@ use std::collections::HashMap;
 use csv::ReaderBuilder;
 
 pub type Vertex = usize;
-// (team_idx, opp_idx, match_count)
 pub type ListOfEdges = Vec<(Vertex, Vertex, usize)>;
-// adjacency list: (neighbor_idx, match_count)
 pub type AdjacencyLists = Vec<Vec<(Vertex, usize)>>;
 
 #[derive(Debug)]
@@ -42,10 +40,6 @@ impl Graph {
     }
 }
 
-/// Reads your CSV (with headers), where:
-///  - Team is in column 4 (zero‑based index 3)
-///  - Opponent is in column 7 (zero‑based index 6)
-/// Counts repeats as edge weights.
 pub fn read_csv_graph_data(
     filename: &str,
 ) -> Result<(Vec<String>, Graph), Box<dyn Error>> {
@@ -63,14 +57,14 @@ pub fn read_csv_graph_data(
     for result in rdr.records() {
         let rec = result?;
         let team = rec.get(3).unwrap().to_string();      
-        let opp  = rec.get(6).unwrap().to_string();    
+        let opponent  = rec.get(6).unwrap().to_string();    
 
         let u = *team_idx.entry(team.clone()).or_insert_with(|| {
             idx_team.push(team.clone());
             idx_team.len() - 1
         });
-        let v = *team_idx.entry(opp.clone()).or_insert_with(|| {
-            idx_team.push(opp.clone());
+        let v = *team_idx.entry(opponent.clone()).or_insert_with(|| {
+            idx_team.push(opponent.clone());
             idx_team.len() - 1
         });
 
