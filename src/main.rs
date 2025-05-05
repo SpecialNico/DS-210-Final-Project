@@ -1,3 +1,5 @@
+//main.rs holds the calling and testing of functions
+
 mod matchtree;
 mod isolatedteams;
 use crate::matchtree::ListOfEdges;

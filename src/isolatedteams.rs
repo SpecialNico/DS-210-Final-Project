@@ -1,23 +1,29 @@
+// hold the logic for the dfs, for finding the farthest teams and 
+//to provide a comparison at the end that allows to see the actual match distribution per team
+
 use crate::matchtree::Graph;
 
+//performs a depth first search on the undirected graph, where the weights are inverted by 1/w in order to have the relationship 
+//of playing more matches with a team would mean you are more closely related with that team
 pub fn dfs_weighted(
     u: usize,
     graph: &Graph,
-    current_dist: f64,
+    current_dist: f64,    //takes in defining the 
     visited: &mut Vec<bool>,
     dist: &mut Vec<f64>,
 ) {
     for &(v, w) in &graph.outedges[u] {
         if !visited[v] && w > 0 {
             visited[v] = true;
-            let inv_weight = 1.0 / (w as f64);
+            let inv_weight = 1.0 / (w as f64);    //inverted weight calculation: we want more frequency to associate with less distance
             let next_dist = current_dist + inv_weight;
             dist[v] = next_dist;
             dfs_weighted(v, graph, next_dist, visited, dist);
         }
     }
 }
-
+//does two dfs searches (similar to homework), where the farthest point is found by comparing values using partial cmp
+//and finds max distance/indeces of the teams that are the most isolated
 pub fn final_dfs(graph: &Graph) -> (Vec<usize>, f64) {
     let mut visited = vec![false; graph.n];
     let mut dist = vec![0.0; graph.n];
@@ -26,7 +32,7 @@ pub fn final_dfs(graph: &Graph) -> (Vec<usize>, f64) {
 
     let farthest = (0..graph.n)
         .max_by(|&a, &b| dist[a].partial_cmp(&dist[b]).unwrap())
-        .unwrap();
+        .unwrap();   //farthest is compared using partial cmp
 
     let mut visited2 = vec![false; graph.n];
     let mut dist2 = vec![0.0; graph.n];
@@ -50,8 +56,9 @@ pub fn final_dfs(graph: &Graph) -> (Vec<usize>, f64) {
 
     (teams, max_dist)
 }
-
-pub fn match_num_comparison(graph: &Graph, teams: &Vec<String>) {
+//iterates through each teams adjacency list to find which team 
+//has the least and most matches played, as well as the average matches per team
+pub fn match_num_comparison(graph: &Graph, teams: &Vec<String>) {  //input is undirected Graph and vector of team names
     let mut total_matches = 0;
     let mut least_matches = usize::MAX;
     let mut most_matches = 0;
@@ -70,7 +77,7 @@ pub fn match_num_comparison(graph: &Graph, teams: &Vec<String>) {
         if match_count > most_matches {
             most_matches = match_count;
             team_most = i;
-        }
+        } // returns print statements with comparisons most/least/avg matches
     }
 
     let match_avg = total_matches as f64 / graph.n as f64;
